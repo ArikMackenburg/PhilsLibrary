@@ -12,5 +12,6 @@ namespace Library
         Romance,
         Adult,
         Comic,
+        Unknown
     }
 }

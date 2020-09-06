@@ -9,11 +9,11 @@ namespace Library
     {
         private T[] books = new T[5];
         private int count = 0;
-
         public int Count => count;
-
+        
         public void AddBook(T book)
         {
+            
             if (count >= books.Length)
             {
                 Array.Resize(ref books, books.Length * 2);
