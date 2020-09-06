@@ -1,5 +1,5 @@
 # PhilsLibrary
-![.NET Core](https://github.com/ArikMackenburg/PhilsLibrary/workflows/.NET%20Core/badge.svg)
+![.NET Core](https://github.com/ArikMackenburg/PhilsLibrary/workflows/.NET%20Core/badge.svg?branch=master)
 # Program Specifications
 Your solution should include the following:
 
