@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data;
+using System.Dynamic;
+using System.Security.Cryptography.X509Certificates;
 using Library;
 
 namespace Library
@@ -8,27 +11,32 @@ namespace Library
     public class Program
     {
         public static int IDNum = 1;
+        public static Library<Book> Library = new Library<Book>();
+        public static List<Book> BookBag = new List<Book>();
         static void Main(string[] args)
         {
+            
+            Console.WriteLine("Welcome to Phil's Lending Library!");
+            Console.ReadKey();
             PopulateLibrary();
             UserInterface();
             
             
         }
-        public static Library<Book> Library = new Library<Book>();
-        public static List<Book> BookBag = new List<Book>();
+       
         
+        //User Interface
         static void UserInterface()
         {
             
-            Console.WriteLine("Welcome to Phil's Lending Library!");
-            Console.ReadKey();
+        Menu:
             Console.Clear();
             Console.WriteLine("Select an option");
             Console.WriteLine("------------------");
             Console.WriteLine("1. - Checkout Book");
             Console.WriteLine("2. - Return Book");
-            Console.WriteLine("3. - Phil's Menu");
+            Console.WriteLine("3. - View Your Books");
+            Console.WriteLine("4. - Phil's Menu");
 
             string input = Console.ReadLine();
 
@@ -37,17 +45,25 @@ namespace Library
                 case "1":
                     AvailableBooks();
                     CheckoutBook();
-                    CheckBag();
-                    
-                    break;
+                    Console.ReadKey();
+                    goto Menu;
 
                 case "2":
-                    AddABookToLibrary();
-                    break;
+                    ReturnBook();
+                    goto Menu;
+
+                case "3":
+                    CheckBag();
+                    goto Menu;
+
+                case "4":
+                    AllBooks();
+                    goto Menu;
             }
             
 
         }
+        // Add a book to the library
         static void AddBook(string title, string fName, string lName, Genre genre)
         {
             Book book = new Book();
@@ -68,7 +84,7 @@ namespace Library
         {
             Console.WriteLine("---------------------------------------------------");
         }
-
+        // Starting books for library
         static void PopulateLibrary()
         {
             AddBook("Harry Potter and the Sorcerer's Stone","J.K.","Rowling",Genre.Fantasy);
@@ -80,7 +96,7 @@ namespace Library
             AddBook("Harry Potter and the Deathly Hallows","J.K.","Rowling",Genre.Fantasy);         
             
         }
-
+        // List of all books for admin with checkedout status
         static void AllBooks()
         {
             Console.Clear();
@@ -95,7 +111,9 @@ namespace Library
                     Console.WriteLine("  - Checked Out");
                 }
             }
+            Console.ReadKey();
         }
+        // Shows available books that arent checkedout
         static void AvailableBooks()
         {
             
@@ -115,6 +133,8 @@ namespace Library
 
             }
         }
+
+        // Admin add book
         static void AddABookToLibrary()
         {
             string inputTitle = SetTitle();
@@ -125,6 +145,7 @@ namespace Library
             AddBook(inputTitle,inputFirstName,inputLastName,inputGenre);
 
         }
+        // Helper for AddABookToLibrary
 
         static Genre SelectGenre()
         {
@@ -172,6 +193,7 @@ namespace Library
             //6: Comic
 
         }
+        // Helper for AddABookToLibrary
 
         static string SetTitle()
         {
@@ -187,6 +209,8 @@ namespace Library
             }
             return inputTitle;
         }
+        // Helper for AddABookToLibrary
+
         static string SetFirstName()
         {
         author:
@@ -201,6 +225,8 @@ namespace Library
             }
             return inputFirstName;
         }
+        // Helper for AddABookToLibrary
+
         static string SetLastName()
         {
         author:
@@ -212,31 +238,70 @@ namespace Library
             }
             return inputLastName;
         }
-        
+        // Checkout book
         static void CheckoutBook()
         {
             Console.WriteLine();
             Console.WriteLine("Select book number to checkout");
             string inputString = Console.ReadLine();
             int input = Convert.ToInt32(inputString);
-            Console.WriteLine(input);
+            
             foreach (Book book in Library)
             {
-                Console.WriteLine(book.iD);
+                
                 if ( input == book.iD)
                 {
                     book.CheckedOut = true;
-                    BookBag.Add(book);    
+                    BookBag.Add(book);
+                    Console.Clear();
+                    Console.WriteLine($"Checked out {book.Title}");
                 }
             }
+            
         }
-        
+        // Users bookbag
         static void CheckBag()
         {
+            Console.Clear();
+            Console.WriteLine("Book Bag");
             foreach (Book book in BookBag)
             {
-                Console.WriteLine(book.Title);
+                Lines();
+                Console.WriteLine($"{book.iD}.    Title: {book.Title}");
+                Console.WriteLine($"      Author: {book.Author.Name()}");
+                Console.WriteLine($"      Genre: {book.Genre}");
             }
+            Console.ReadKey();
+        }
+        static void ReturnBook()
+        {
+            Console.Clear();
+            Console.WriteLine("Choose book to return");
+            foreach (Book book in BookBag)
+            {
+                Lines();
+                Console.WriteLine($"{book.iD}.    Title: {book.Title}");
+                Console.WriteLine($"      Author: {book.Author.Name()}");
+                Console.WriteLine($"      Genre: {book.Genre}");
+            }
+            string inputString = Console.ReadLine();
+            int input = Convert.ToInt32(inputString);
+            foreach (Book book in BookBag)
+            {
+                if (input == book.iD)
+                {
+                    BookBag.Remove(book);
+                    break;
+                }
+            }
+            foreach (Book book in Library)
+            {
+                if (input == book.iD)
+                {
+                    book.CheckedOut = false;
+                }
+            }
+
         }
     }
 }
